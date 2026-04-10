@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="zh"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="description" content="26道题，8个维度，测测你被AI取代了多少">
+<title>你被AI取代了多少？</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#111111;--white:#FFFFFF;--green:#2EE89A;--green2:#1BC97D;--gray:#F4F4F0;--gray2:#E8E8E2;--gray3:#B0B0A8;--muted:#888880;--radius:20px;--font:'Noto Sans SC',sans-serif}
+html,body{width:100%;height:100%;font-family:var(--font);background:var(--black);overflow:hidden;-webkit-font-smoothing:antialiased}
+#app{width:100%;height:100%;max-width:390px;margin:0 auto;position:relative;overflow:hidden;background:var(--white)}
+.page{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden}
+.page.hidden{display:none}
+.page.entering{animation:slideIn .45s cubic-bezier(.22,1,.36,1) forwards}
+.page.exiting{animation:slideOut .35s cubic-bezier(.4,0,1,1) forwards}
+.page.back-entering{animation:backIn .4s cubic-bezier(.22,1,.36,1) forwards}
+.page.back-exiting{animation:backOut .3s cubic-bezier(.4,0,1,1) forwards}
+@keyframes slideIn{from{transform:translateX(100%);opacity:.6}to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(-18%);opacity:0}}
+@keyframes backIn{from{transform:translateX(-18%);opacity:.6}to{transform:translateX(0);opacity:1}}
+@keyframes backOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+#p-start{background:var(--white);justify-content:space-between;padding:60px 32px 52px}
+.start-badge{display:inline-flex;align-items:center;gap:6px;background:var(--black);color:var(--white);font-size:11px;font-weight:700;letter-spacing:.08em;padding:6px 14px;border-radius:100px;text-transform:uppercase}
+.start-badge span{color:var(--green)}
+.start-hero{flex:1;display:flex;align-items:center;justify-content:center}
+.mascot-wrap{width:240px;height:135px;border-radius:28px;overflow:hidden;-webkit-mask-image:-webkit-radial-gradient(white,black)}
+.start-mascot{width:100%;height:100%;object-fit:cover;display:block}
+.start-copy{text-align:center}
+.start-copy h1{font-size:36px;font-weight:900;line-height:1.1;color:var(--black);margin-bottom:12px;letter-spacing:-.02em}
+.start-copy h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),var(--green2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.start-copy p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:36px}
+.btn-start{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:18px;background:var(--black);color:var(--white);font-family:var(--font);font-size:16px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;position:relative;overflow:hidden;transition:transform .15s}
+.btn-start::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(46,232,154,.25),transparent);transform:translateX(-100%);animation:shimmer 3s ease-in-out 1.5s infinite}
+@keyframes shimmer{to{transform:translateX(200%)}}
+.btn-start:active{transform:scale(.97)}
+.btn-start .arrow{width:24px;height:24px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.start-meta{text-align:center;font-size:12px;color:var(--gray3);margin-top:16px}
+#p-quiz{background:var(--gray)}
+.quiz-header{padding:52px 28px 20px;background:var(--white);border-radius:0 0 28px 28px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.btn-back{display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px 0;font-family:var(--font);font-size:12px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent}
+.quiz-num{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.quiz-dim-badge{font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:100px;text-transform:uppercase}
+.progress-track{width:100%;height:6px;background:var(--gray2);border-radius:3px;overflow:hidden;margin-bottom:20px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:3px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.quiz-q{font-size:20px;font-weight:800;line-height:1.45;color:var(--black);letter-spacing:-.01em;min-height:58px}
+.quiz-options{padding:20px 20px 40px;display:flex;flex-direction:column;gap:10px}
+.opt-card{background:var(--white);border-radius:16px;padding:14px 18px;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .15s,box-shadow .15s;position:relative;overflow:hidden;height:72px;display:flex;align-items:center;gap:14px;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.opt-letter{width:30px;height:30px;flex-shrink:0;border-radius:9px;background:var(--gray);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--muted);transition:background .2s,color .2s;position:relative;z-index:1}
+.opt-text{font-size:14px;font-weight:500;color:var(--black);line-height:1.4;flex:1;position:relative;z-index:1}
+.opt-card:active{transform:scale(.98)}
+.opt-card.selected{border-color:var(--green);box-shadow:0 0 0 4px rgba(46,232,154,.15);transform:scale(1.012)}
+.opt-card.selected .opt-letter{background:var(--green);color:var(--black)}
+.ripple{position:absolute;border-radius:50%;background:rgba(46,232,154,.35);transform:scale(0);animation:rippleAnim .5s linear;pointer-events:none}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+.quiz-q.fadeOut{animation:qOut .2s ease forwards}
+.quiz-q.fadeIn{animation:qIn .3s ease forwards}
+@keyframes qOut{to{opacity:0;transform:translateY(-8px)}}
+@keyframes qIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.opt-card.fadeOut{animation:optOut .18s ease forwards}
+@keyframes optOut{to{opacity:0;transform:translateY(8px) scale(.97)}}
+#p-loading{background:var(--black);align-items:center;justify-content:center}
+.loading-inner{display:flex;flex-direction:column;align-items:center;gap:32px;padding:0 40px}
+.loading-icon{width:80px;height:80px;border-radius:24px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;animation:iconPulse 2s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(46,232,154,0)}50%{transform:scale(1.05);box-shadow:0 0 0 16px rgba(46,232,154,.08)}}
+.loading-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.loading-item{background:rgba(255,255,255,.05);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;opacity:0;animation:itemIn .4s ease forwards}
+.loading-item:nth-child(1){animation-delay:.1s}.loading-item:nth-child(2){animation-delay:.3s}.loading-item:nth-child(3){animation-delay:.5s}.loading-item:nth-child(4){animation-delay:.7s}
+@keyframes itemIn{to{opacity:1}}
+.loading-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.loading-bar{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.loading-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:2px;width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.loading-pct{font-size:20px;font-weight:900;color:var(--white);font-variant-numeric:tabular-nums}
+.loading-title{font-size:18px;font-weight:800;color:var(--white);text-align:center;line-height:1.4}
+.loading-sub{font-size:13px;color:rgba(255,255,255,.4);text-align:center;line-height:1.6}
+#p-result{background:var(--white);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.result-inner{padding-bottom:52px;opacity:0;animation:resultIn .6s ease .2s forwards}
+@keyframes resultIn{to{opacity:1}}
+.result-illus-wrap{width:100%;padding-top:52px;display:flex;align-items:center;justify-content:center}
+.result-illus{width:240px;height:240px;display:flex;align-items:center;justify-content:center;animation:illusIn .7s cubic-bezier(.34,1.56,.64,1) .3s both}
+@keyframes illusIn{from{transform:scale(.7) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.result-illus img{width:100%;height:100%;object-fit:contain}
+.result-name-block{padding:16px 28px 0;text-align:center}
+.result-name{font-size:34px;font-weight:900;color:var(--black);letter-spacing:-.03em;line-height:1.1;margin-bottom:6px}
+.result-sub{font-size:14px;color:var(--muted);line-height:1.6}
+.result-rate-strip{margin:16px 20px 0;background:var(--black);border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden}
+.result-rate-strip::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(46,232,154,.15) 0%,transparent 70%)}
+.rate-left{flex-shrink:0}
+.rate-big{font-size:44px;font-weight:900;color:var(--white);line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.rate-big .unit{font-size:22px}
+.rate-right{flex:1;min-width:0}
+.rate-tag{font-size:10px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px}
+.rate-track{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.rate-fill{height:100%;border-radius:3px;width:0%;transition:width 1.6s cubic-bezier(.34,1.1,.64,1)}
+.result-body-card{margin:14px 20px 0;background:var(--gray);border-radius:20px;padding:20px 22px}
+.result-body-card p{font-size:15px;line-height:1.85;color:var(--black)}
+.result-tip-card{margin:10px 20px 0;border-radius:18px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;border:2px solid}
+.tip-icon{width:30px;height:30px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.tip-label{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.tip-text{font-size:14px;line-height:1.65;font-weight:500}
+.result-quote-card{margin:10px 20px 0;background:var(--black);border-radius:20px;padding:26px 26px;position:relative;min-height:90px}
+.quote-open{font-size:80px;line-height:.75;color:rgba(255,255,255,.12);font-family:Georgia,serif;position:absolute;top:10px;left:14px;user-select:none}
+.quote-close{font-size:80px;line-height:.75;color:rgba(255,255,255,.12);font-family:Georgia,serif;position:absolute;bottom:4px;right:14px;user-select:none}
+.quote-text{font-size:15px;font-weight:700;color:var(--white);line-height:1.7;position:relative;z-index:1;padding:10px 4px}
+.result-actions{padding:16px 20px 0;display:flex;gap:10px}
+.btn-share{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:15px 12px;border-radius:16px;font-family:var(--font);font-size:14px;font-weight:700;border:none;cursor:pointer;background:var(--green);color:var(--black);transition:transform .15s}
+.btn-share:active{transform:scale(.97)}
+.btn-save{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:15px 12px;border-radius:16px;font-family:var(--font);font-size:14px;font-weight:700;border:2px solid var(--black);cursor:pointer;background:var(--white);color:var(--black);transition:transform .15s}
+.btn-save:active{transform:scale(.97)}
+.btn-retry{display:flex;align-items:center;justify-content:center;width:calc(100% - 40px);padding:13px;margin:8px 20px 0;border-radius:14px;font-family:var(--font);font-size:14px;font-weight:600;border:2px solid var(--gray2);cursor:pointer;background:var(--white);color:var(--muted)}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(17,17,17,.9);color:#fff;font-size:13px;font-weight:600;padding:10px 22px;border-radius:100px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.result-author{margin:14px 20px 0;padding:14px 16px;background:var(--gray);border-radius:16px;display:flex;align-items:center;gap:12px}
+.author-avatar{width:48px;height:48px;border-radius:50%;flex-shrink:0;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.author-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.author-info{flex:1}
+.author-platform{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray3);margin-bottom:2px}
+.author-name{font-size:15px;font-weight:800;color:var(--black)}
+.author-caption{font-size:12px;color:var(--muted);margin-top:1px}
+.saving-mask{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s}
+.saving-mask.show{opacity:1;pointer-events:all}
+.saving-box{background:var(--white);border-radius:20px;padding:28px 36px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.saving-spinner{width:36px;height:36px;border:3px solid var(--gray2);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.saving-text{font-size:14px;font-weight:600;color:var(--black)}
+</style></head><body><div id="app">
+<div class="page" id="p-start">
+<div><span class="start-badge">AI取代 <span>诊断系统</span> v2.0</span></div>
+<div class="start-hero"><div class="mascot-wrap"><img class="start-mascot" src="assets/mascot.gif" alt="mascot"></div></div>
+<div class="start-copy"><h1>你被AI<br>取代了<em>多少？</em></h1><p>26道题，8个维度深度扫描<br>系统将为您生成专属诊断报告</p><button class="btn-start" onclick="startQuiz()">开始诊断<div class="arrow"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div></button><p class="start-meta">预计用时 90 秒 &middot; 共 26 题</p></div>
+</div>
+<div class="page hidden" id="p-quiz"><div class="quiz-header"><div class="quiz-top"><button class="btn-back" id="btn-back" onclick="goBack()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>返回</button><span class="quiz-num" id="quiz-num">Q1 / 26</span><span class="quiz-dim-badge" id="quiz-dim-badge"></span></div><div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:3.8%"></div></div><div class="quiz-q" id="quiz-q"></div></div><div class="quiz-options" id="quiz-options"></div></div>
+<div class="page hidden" id="p-loading"><div class="loading-inner"><div class="loading-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="14" stroke="rgba(255,255,255,.15)" stroke-width="2"/><path d="M18 4 A14 14 0 0 1 32 18" stroke="#2EE89A" stroke-width="2.5" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1.2s" repeatCount="indefinite"/></path></svg></div><div><div class="loading-title">正在生成您的诊断报告</div><div class="loading-sub" style="margin-top:8px">系统正在对8个维度进行深度分析...</div></div><div class="loading-grid"><div class="loading-item"><div class="loading-label">标准化程度</div><div class="loading-bar"><div class="loading-fill" id="lf1"></div></div><div class="loading-pct" id="lp1">0%</div></div><div class="loading-item"><div class="loading-label">创造性要求</div><div class="loading-bar"><div class="loading-fill" id="lf2"></div></div><div class="loading-pct" id="lp2">0%</div></div><div class="loading-item"><div class="loading-label">领导混沌度</div><div class="loading-bar"><div class="loading-fill" id="lf3"></div></div><div class="loading-pct" id="lp3">0%</div></div><div class="loading-item"><div class="loading-label">AI 渗透度</div><div class="loading-bar"><div class="loading-fill" id="lf4"></div></div><div class="loading-pct" id="lp4">0%</div></div></div></div></div>
+<div class="page hidden" id="p-result"><div class="result-inner" id="result-capture"><div class="result-illus-wrap"><div class="result-illus" id="result-illus"></div></div><div class="result-name-block"><div class="result-name" id="result-name"></div><div class="result-sub" id="result-sub"></div></div><div class="result-rate-strip"><div class="rate-left"><div class="rate-big"><span id="rate-int">0</span><span class="unit">%</span></div></div><div class="rate-right"><div class="rate-tag">AI 取代率</div><div class="rate-track"><div class="rate-fill" id="rate-fill"></div></div></div></div><div class="result-body-card"><p id="result-body"></p></div><div class="result-tip-card" id="result-tip-card"><div class="tip-icon" id="tip-icon">&#x1F4A1;</div><div class="tip-content"><div class="tip-label" id="tip-label">本系统温馨建议</div><div class="tip-text" id="tip-text"></div></div></div><div class="result-quote-card"><div class="quote-open">&#x201C;</div><div class="quote-text" id="result-quote"></div><div class="quote-close">&#x201D;</div></div><div class="result-author"><div class="author-avatar"><img src="assets/avatar.png" alt="Mahooyeah"></div><div class="author-info"><div class="author-platform">小红书</div><div class="author-name">Mahooyeah</div><div class="author-caption">诊断报告由此账号出品</div></div></div></div><div class="result-actions"><button class="btn-share" onclick="copyLink()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="12.5" cy="3" r="1.8" stroke="#111" stroke-width="1.4"/><circle cx="12.5" cy="13" r="1.8" stroke="#111" stroke-width="1.4"/><circle cx="3.5" cy="8" r="1.8" stroke="#111" stroke-width="1.4"/><path d="M5.1 7.1L10.9 4M5.1 8.9L10.9 12" stroke="#111" stroke-width="1.4" stroke-linecap="round"/></svg>复制链接</button><button class="btn-save" onclick="saveImage()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11v1a2 2 0 002 2h8a2 2 0 002-2v-1" stroke="#111" stroke-width="1.4" stroke-linecap="round"/></svg>保存图片</button></div><button class="btn-retry" onclick="resetAll()">再测一次</button></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="saving-mask" id="saving-mask"><div class="saving-box"><div class="saving-spinner"></div><div class="saving-text">正在生成图片...</div></div></div>
+<script>
+var IDS=["D-01","D-02","D-03","D-04","D-05","D-06","D-07","W-01","W-02","W-03","W-04","W-05","W-06","W-07","M-01","M-02","M-03","M-04","M-05","M-06","M-07","S-01","S-02","S-03","S-04","S-05","S-06","S-07"];
+var Q=[
+{dim:"S",dl:"标准化",c:"#FF6B6B",bg:"#FFF0F0",q:"你的工作，有没有「正确答案」这种东西？",opts:["有，做对了就是做对了，很清楚", "有对错，但很多时候要靠经验判断", "没有，好不好全靠人说了算"],s:[3, 2, 1]},
+{dim:"S",dl:"标准化",c:"#FF6B6B",bg:"#FFF0F0",q:"你上周做的事，上上周有没有做过类似的？",opts:["几乎一模一样，日子都是复制粘贴的", "有一半差不多，另一半是新情况", "基本没有，我每周都在处理新问题"],s:[3, 2, 1]},
+{dim:"S",dl:"标准化",c:"#FF6B6B",bg:"#FFF0F0",q:"如果让你把自己的工作写成操作手册，能写吗？",opts:["能，而且我感觉写完就能取代我了", "能写个大概，但细节靠不住", "写不了，因为我自己也不知道下一步要干啊"],s:[3, 2, 1]},
+{dim:"S",dl:"标准化",c:"#FF6B6B",bg:"#FFF0F0",q:"你入行第一年踩的坑，现在还在踩吗？",opts:["不踩了，我总结了规律，有章可循", "老坑不踩了，但新坑层出不穷", "还在踩，因为每次都是全新的坑"],s:[3, 2, 1]},
+{dim:"I",dl:"信息密度",c:"#FF8C42",bg:"#FFF4EC",q:"你每天的工作产出，主要是什么？",opts:["能存进电脑的东西——文件、数据、代码、报告", "一半是文件，一半是靠嘴说出来的结果", "没法存进电脑，比如一顿饭、一台手术、一次谈判"],s:[3, 2, 1]},
+{dim:"I",dl:"信息密度",c:"#FF8C42",bg:"#FFF4EC",q:"你每天处理的信息，主要从哪来？",opts:["系统、表格、数据库——都是结构化的", "邮件、文档、会议——半结构化，要靠人整理", "主要靠人说、靠现场观察、靠感觉"],s:[3, 2, 1]},
+{dim:"I",dl:"信息密度",c:"#FF8C42",bg:"#FFF4EC",q:"你请假一周，能不能写一份文档让别人顶上？",opts:["能，我的工作完全可以交接", "能交接七八成，剩下的只能靠缘分", "没法交接，或者根本不需要有人顶"],s:[3, 2, 1]},
+{dim:"C",dl:"创造性",c:"#2EE89A",bg:"#F0FDF8",q:"你上一次做出「从来没人这样干过」的东西，是什么时候？",opts:["我从来不需要这样，照着来就够了", "偶尔有，但不是常态", "经常，没有先例是我工作的日常"],s:[1, 2, 3]},
+{dim:"C",dl:"创造性",c:"#2EE89A",bg:"#F0FDF8",q:"你的工作，能靠「参考模板/竞品/前例」完成大部分吗？",opts:["完全可以，模板直接套用", "能参考，但要大幅改造才能用", "没有可以参考的，或者我就是别人参考的那个"],s:[1, 2, 3]},
+{dim:"C",dl:"创造性",c:"#2EE89A",bg:"#F0FDF8",q:"如果来了个比你勤奋10倍但毫无经验的人，他能做你的工作吗？",opts:["能，培训两周差不多就行了", "能做个大概，但精高学不走", "不可能，勤奋在我这个岗位上没用"],s:[1, 2, 3]},
+{dim:"C",dl:"创造性",c:"#2EE89A",bg:"#F0FDF8",q:"你的工作好不好，谁说了算？",opts:["有客观标准，数据/指标/规范说了算", "有大致标准，但最终还是人来判断", "我说了算，或者干脱没有标准"],s:[1, 2, 3]},
+{dim:"P",dl:"物理依赖",c:"#7C3AED",bg:"#F5F3FF",q:"你的工作，能在家穿睶衣完成吗？",opts:["完全可以，我已经在这么干了", "大部分可以，但有些事必须到场", "不行，我的工作必须人在现场"],s:[1, 2, 3]},
+{dim:"P",dl:"物理依赖",c:"#7C3AED",bg:"#F5F3FF",q:"你上班最离不开的「工具」是什么？",opts:["键盘和屏幕，够了", "电脑加上一堆其他设备或场地", "我的手、身体，或者某个必须在场的物理空间"],s:[1, 2, 3]},
+{dim:"P",dl:"物理依赖",c:"#7C3AED",bg:"#F5F3FF",q:"你交付工作成果的方式是什么？",opts:["发个文件/链接/截图就完事了", "文件加上线下配合，缺一不可", "我的成果没法发文件，它就在现实世界里"],s:[1, 2, 3]},
+{dim:"E",dl:"情感劳动",c:"#EC4899",bg:"#FDF2F8",q:"你有没有在工作中，内心崩溃但表面平静过？",opts:["几乎没有，我的工作不需要这种表演", "偶尔，主要是开会或对接的时候", "这是我的日常基本功，面瘿是职业技能"],s:[1, 2, 3]},
+{dim:"E",dl:"情感劳动",c:"#EC4899",bg:"#FDF2F8",q:"你工作中遇到的人，有没有因为「今天心情不好」让你的工作变得更难？",opts:["几乎没有，我主要和数据/系统打交道", "偶尔，但不是主要障碍", "经常，人的情绪是我每天要处理的核心变量"],s:[1, 2, 3]},
+{dim:"E",dl:"情感劳动",c:"#EC4899",bg:"#FDF2F8",q:"你有没有客户/用户/学生，信任的是你这个人，而不只是你的岗位？",opts:["没有，换个同事来他们也认", "有一些，但不多", "有，如果我走了他们可能也跟着走"],s:[1, 2, 3]},
+{dim:"A",dl:"AI渗透",c:"#A78BFA",bg:"#F5F3FF",q:"你现在用AI辅助工作的频率？",opts:["不用，要么没习惯，要么没机会用", "偶尔用，主要当搜索引擎或写写总结", "高度依赖，没有AI效率会大幅下滑"],s:[1, 2, 3]},
+{dim:"A",dl:"AI渗透",c:"#A78BFA",bg:"#F5F3FF",q:"你用AI做过最「重」的事是什么？",opts:["没用过，或者只用来聊天解闷", "帮我写过文案/邮件/总结这类东西", "直接参与我的核心产出，我负责把关和调方向"],s:[1, 2, 3]},
+{dim:"A",dl:"AI渗透",c:"#A78BFA",bg:"#F5F3FF",q:"如果你用的AI工具明天全关了，你怎么样？",opts:["没影响，我本来就没在用", "有点烦，但撑得过去", "我不敎想这个问题"],s:[1, 2, 3]},
+{dim:"B",dl:"领导混沌",c:"#F59E0B",bg:"#FFFBEB",q:"你的老板/甲方，上周有没有推翻过已经确认的事？",opts:["「已经确认」在我们这里是个伪命题", "有，但在可接受范围内", "没有，他们说话算数"],s:[3, 2, 1]},
+{dim:"B",dl:"领导混沌",c:"#F59E0B",bg:"#FFFBEB",q:"你有没有做完一件事，才发现根本不需要做？",opts:["没有，我们流程很清晰", "偶尔，但还好", "有，而且没有人觉得这有什么问题"],s:[1, 2, 3]},
+{dim:"B",dl:"领导混沌",c:"#F59E0B",bg:"#FFFBEB",q:"你有没有需要靠「猜」来理解老板想要什么？",opts:["不需要，需求说得很清楚", "偶尔需要揂摸一下", "猜老板心思是我的核心竞争力之一"],s:[1, 2, 3]},
+{dim:"N",dl:"对接密度",c:"#06B6D4",bg:"#ECFEFF",q:"你每天需要主动联系或协调多少人？",opts:["2个以内，我基本独立作业", "3到60个，有固定协作圈", "7个以上，我每天在各种群里救火"],s:[1, 2, 3]},
+{dim:"N",dl:"对接密度",c:"#06B6D4",bg:"#ECFEFF",q:"你有没有推进过一件事，需要同时3个以上立场不一样的人？",opts:["没有，我的工作不涉及这种协调", "偶尔，但有标准流程可以走", "这就是我工作的日常，我是专门干这个的"],s:[1, 2, 3]},
+{dim:"N",dl:"对接密度",c:"#06B6D4",bg:"#ECFEFF",q:"你有没有「专门维护过某个人」——不是因为喜欢他，是因为不维护就干不成事？",opts:["没有，我靠实力说话", "有过，但不是常态", "我有一份隐形的关键人物名单，定期维护，从不外传"],s:[1, 2, 3]}
+];
+var RES={
+"D-01":{"name": "岗位幽灵", "sub": "椅子还在，但它已经不需要你了", "body": "系统检测到您目前处于一种薛定谔的在职状态——打卡记录显示您存在，但岗位价值显示您不存在。您每天准时到岗，认真完成任务，绩效从不拖后腿，简直是模范员工。问题就在这里：一个可以被「模范」二字概括的员工，通常也可以被一段程序完整描述。您不是在工作，您是在用「有人坐在这里」这件事本身，说服公司暂时不去想「为什么要有人坐在这里」。", "tip": "趁HR还没反应过来，先去考个叉车证，留条后路。", "quote": "你不是在做工作，你是在扮演一个正在做工作的人。", "fill": "linear-gradient(90deg,#FF6B6B,#FF4040)", "tb": "#FFF0F0", "tc": "#FF4040"},
+"D-02":{"name": "最后的打字机", "sub": "你在这条流水线上，是最后一个还没被替换的零件", "body": "您有没有想过，您每天做的事情，本质上是在帮信息换一种格式？它从这个系统进来，经过您的手，变成另一种格式出去。您在这个过程中付出了时间、精力，乃至一部分头发——但信息本身并不在意经手的是您还是一个脚本。历史上每一台被淘汰的机器，在退场前都兢兢业业工作到最后一天。您现在的状态，和它们高度相似。", "tip": "您的手速不错，转行做奶茶店收银，至少每个客户都是货真价实的真人需求。", "quote": "流程还没来得及更新，而你就夹在流程里，等着被更新。", "fill": "linear-gradient(90deg,#FF6B6B,#FF4040)", "tb": "#FFF0F0", "tc": "#FF4040"},
+"D-03":{"name": "主动挖坟人", "sub": "你在亲手蒸馏自己的Skill", "body": "别人还在抵触AI，您已经冲在最前面，恨不得把自己的工作经验、判断逻辑、踩过的坑，打包压缩喂给模型。您美名其曰「拥抱变化」，但系统观察到的画面是：一个人攥着铁锹，对着自己的墓地，干劲儿十足。更令人感动的是，您还挖得很认真，生怕坑不够深。AI在旁边看着，没说话，但它记住了一切。", "tip": "您这么擅长知识迁移，建议去做AI驯兽师，至少名片上听起来还挺厉害的。", "quote": "你用AI的每一天，都是在认真准备自己的离职交接。", "fill": "linear-gradient(90deg,#FF6B6B,#FF4040)", "tb": "#FFF0F0", "tc": "#FF4040"},
+"D-04":{"name": "流程标本", "sub": "你把工作做得太完整了，完整到可以直接打包走", "body": "您是一个高度自律、流程清晰、输出稳定的优秀员工。恭喜您，这是这份诊断报告里最接近表扬的一句话，请截图留念。因为接下来要说的是：您刚才那些优点，逐条翻译成AI的语言，分别叫做「训练数据充足」「任务边界明确」「输出可验证」。您把自己活成了一份完美的操作手册，清晰到任何人拿起来都能照着执行——包括不是人的那种。", "tip": "您这么标准化，去做麦当劳培训讲师吧，至少薯条的火候目前还需要人类把关。", "quote": "把工作做得太标准，是一种慢性职业自杀。", "fill": "linear-gradient(90deg,#FF6B6B,#FF4040)", "tb": "#FFF0F0", "tc": "#FF4040"},
+"D-05":{"name": "活体Excel", "sub": "你活成了一张有体温的电子表格", "body": "我们不是在骂您，我们是在精确描述您。您的大脑里住着一套严密的规则系统，擅长分类、核对、汇总、填写，遇到异常值会自动报警，遇到缺失项会主动补全。这是非常宝贵的能力，在2015年。现在的问题是，AI也有这套系统，而且它不会在月底对账时突然头疼，不会因为领导今天心情不好就多填错两个格，更不需要在工作群里回复「收到」。", "tip": "已为您预约Excel高级认证考试，考完可以去社区教中老年人用电脑，需求稳定，暂时安全。", "quote": "你和Excel的区别，是你需要发工资。", "fill": "linear-gradient(90deg,#FF6B6B,#FF4040)", "tb": "#FFF0F0", "tc": "#FF4040"},
+"D-06":{"name": "确认键保安", "sub": "整条流水线跑完了，最后那个键还是留给你按的", "body": "从某种角度来说，您的工作已经实现了高度自动化，值得恭喜。从另一个角度来说，自动化的是工作，没被自动化的是您，这两件事同时发生，细品一下，不太对劲。您现在的核心职责是：在AI处理完所有内容之后，盯着屏幕确认一遍，然后点击提交。您是整条流水线上唯一还插着电的人类节点，存在的意义是「出了事有人背锅」。这个功能，一个弹窗正在认真竞聘。", "tip": "您对按钮情有独钟，建议转行电梯操作员——哦，那个职业也已经消失了。要不试试卖烤面筋？站着就行，不用点确认。", "quote": "你的岗位职责，正在被一个弹窗认真挑战。", "fill": "linear-gradient(90deg,#FF6B6B,#FF4040)", "tb": "#FFF0F0", "tc": "#FF4040"},
+"D-07":{"name": "复制粘贴怪", "sub": "你在各个系统之间搬运信息，勤勤恳恳", "body": "您是一个勤奋的人，这一点系统完全承认。您每天在各个平台、系统、文档之间健步如飞，把信息从A搬到B，清洗一下，再搬到C，格式调一调，发出去，然后等下一条进来。您做这件事做得又快又准，已经形成了肌肉记忆。这也是问题所在——但凡一件事能形成肌肉记忆，就意味着它有规律；有规律，就意味着可以被学习；可以被学习，接下来的事您自己接着想。", "tip": "您搬运能力出众，建议注册快递驿站，至少包裹这个东西，暂时还没办法数字化。", "quote": "你的核心竞争力，是AI的基础功能。", "fill": "linear-gradient(90deg,#FF6B6B,#FF4040)", "tb": "#FFF0F0", "tc": "#FF4040"},
+"W-01":{"name": "闻屁憋气者", "sub": "闻到了，选择憋住，假装什么都没发生", "body": "系统观察到您处于一种高度自洽的状态：您不是不知道AI的存在，您只是选择性地不去深想。每次有人提起AI取代的话题，您都能迅速找到一个理由说服自己「我这个岗位不一样」。这个理由每隔一段时间会换一个新版本，但结论始终不变。这种心理韧性其实挺令人敬佩的——一只鸵鸟把头埋进沙子的那一刻，内心也是平静的。您不是没有危机感，您只是把危机感管理得很好。", "tip": "头一直埋在土里，你不憋吗？", "quote": "你不是没有危机感，你只是把危机感管理得很好。", "fill": "linear-gradient(90deg,#FFB347,#FF8C42)", "tb": "#FFF4EC", "tc": "#FF8C42"},
+"W-02":{"name": "AI代驾", "sub": "方向盘还在，但开车的已经不是你了", "body": "您是AI工具的重度用户，效率极高，产出亮眼，同事都夸您与时俱进。但系统需要指出一个小小的认知偏差：您以为AI是您的工具，但从另一个角度看，您正在成为AI的工具——负责给它提供方向感、做最终拍板、在它说错话的时候出来道歉。这个分工看起来您还占主导，但主导的比例正在以一个您不太愿意计算的速度，持续缩小。", "tip": "副驾驶也是有价值的，至少目前还需要人帮AI踩刹车。珍惜这段窗口期。", "quote": "你在用AI，AI也在用你，只是它没告诉你。", "fill": "linear-gradient(90deg,#FFB347,#FF8C42)", "tb": "#FFF4EC", "tc": "#FF8C42"},
+"W-03":{"name": "AI套壳人", "sub": "你负责把AI的输出说得像是你写的", "body": "您掌握了一项当代核心技能：AI生产内容，您负责让它听起来像人写的。改几个词，换个句式，加一点「个人风格」，署上自己的名字，发出去。这个过程您做得行云流水，以至于有时候自己都忘了原始素材是谁提供的。系统不评判这个工作方式，只是想提醒您：当AI的输出越来越像人写的，您这道「让它像人写的」的工序，就会越来越显得多余。", "tip": "您对语感的把控能力是真实的，建议去做AI内容审核员，至少现在这个职位还需要人类的直觉。", "quote": "你的工作是给AI的输出盖一个人类认证章。", "fill": "linear-gradient(90deg,#FFB347,#FF8C42)", "tb": "#FFF4EC", "tc": "#FF8C42"},
+"W-04":{"name": "会议室植物", "sub": "你在那里，这件事本身就是你的价值", "body": "您每天参加大量会议，出席各种讨论，偶尔发言，频繁点头。您的日历被各种邀请塞满，忙碌感是真实的，但如果有人认真统计您在这些会议里实质性推动了什么，答案可能需要想一会儿。您最重要的职能，是让会议室里的人数达到「显得这件事很重要」的标准。这个职能目前还无法被AI替代——AI没有办法坐在那里显得很认真。", "tip": "您的出席率名列前茅，建议去做会议主持人，至少那个角色还需要真人撑场面。", "quote": "你最重要的工作，是让别人觉得这件事有人在管。", "fill": "linear-gradient(90deg,#FFB347,#FF8C42)", "tb": "#FFF4EC", "tc": "#FF8C42"},
+"W-05":{"name": "知识库遗产", "sub": "你积累的那些，正在成为AI的训练素材", "body": "您在这个行业深耕多年，积累了大量知识、经验和判断力。这些东西是真实的，没有人可以否认。讽刺的是，这些知识越系统、越完整，就越容易被提取——它们正在以某种方式，成为AI理解这个行业的原材料。您花了十年建起来的认知体系，AI用几个月就读完了，还记住了。这堵墙还在，但它已经不够高，而且有人正在爬。", "tip": "您的从业经验依然值钱，但建议把它转化成判断力而不只是知识量——AI能背书，但它不会真的懂这个行业在拐弯处发生了什么。", "quote": "你花十年积累的经验，正在变成AI的训练数据。", "fill": "linear-gradient(90deg,#FFB347,#FF8C42)", "tb": "#FFF4EC", "tc": "#FF8C42"},
+"W-06":{"name": "数字民工", "sub": "工具是新的，但你干的活AI也能干", "body": "您不排斥科技，您用电脑，用软件，用各种数字工具，从这个角度看您一点都不落伍。但系统需要区分两件事：使用数字工具，和从事数字工作。您属于前者——工具是现代的，但工作内容本身，是AI最熟悉的那种地形。您坐在电脑前，和坐在流水线前的工人，面临的是同一个问题，只是您的流水线在屏幕里，所以不太容易看出来。", "tip": "您对电脑操作驾轻就熟，可以考虑去教老年大学，那里的学员会真心感谢您，而且暂时不会被AI抢走。", "quote": "你的办公工具是数字的，但你的处境和流水线工人一样。", "fill": "linear-gradient(90deg,#FFB347,#FF8C42)", "tb": "#FFF4EC", "tc": "#FF8C42"},
+"W-07":{"name": "AI助理", "sub": "你以为AI是你的工具，其实你在给AI打下手", "body": "您每天产出大量内容，标题、文案、推文、简报，数量可观，节奏稳定。表面上看，您在用AI提效。但系统需要指出一个微妙的角色错位：您以为您是用AI的那个人，但实际上，您正在做的事——整理方向、调整语气、检查输出——这些工作，换个角度看，是助理在做的事。AI在生产，您在打下手。人机关系什么时候悄悄搞反了，您可能自己都没注意到。", "tip": "您对内容的判断力是真实的，建议把它升级成策略力——从「帮AI改稿」变成「告诉AI要做什么」，这两个角色的含金量差很多。", "quote": "你们的分工是：AI负责干活，你负责告诉它干得对不对。", "fill": "linear-gradient(90deg,#FFB347,#FF8C42)", "tb": "#FFF4EC", "tc": "#FF8C42"},
+"M-01":{"name": "人味儿担当", "sub": "你的存在，给这件事盖了个「真人参与」的章", "body": "好消息是，您目前仍然具备一项AI无法完全复制的能力：您是真实存在的人类，会犯错，会共情，会在对方说完一段话之后给出一个「我懂你」的眼神。这个能力听起来很玄，但在很多场合，它比任何技术能力都值钱。坏消息是，「你是个人」这件事本身不是护城河，它只是一个起点。如果您除了是人之外，暂时没有其他AI做不到的东西，这个优势的保质期，可能比您想象的短。", "tip": "把「我是真人」这件事变成一门手艺，而不只是一个生理事实。", "quote": "AI没有体温，但光靠体温，你也撑不了太久。", "fill": "linear-gradient(90deg,#FFD166,#D4A017)", "tb": "#FFFBEB", "tc": "#D4A017"},
+"M-02":{"name": "非遗手艺人", "sub": "你手上有AI没有的东西，而且暂时教不会", "body": "您掌握着一门需要手、眼、身体协调配合的技艺，这件事在当下突然变得格外值钱。AI可以告诉您最好的刀工是什么角度，但它切不了这块肉。它可以计算出最优的走线方案，但它拿不了那根管子。您的双手是您最好的简历，而且目前还没有人知道怎么给它写一个数字版本。这是真实的护城河，只是护城河也需要维护——手艺会退步，身体会老化，这两件事AI不需要担心，您需要。", "tip": "好好保养您的手，它现在是您对抗AI最硬核的资产。顺便考虑带个徒弟，把手艺传下去，让这条护城河再宽一点。", "quote": "你的双手是你最好的简历，AI到现在还不知道怎么复制它。", "fill": "linear-gradient(90deg,#FFD166,#D4A017)", "tb": "#FFFBEB", "tc": "#D4A017"},
+"M-03":{"name": "薛定谔的员工", "sub": "你的工作状态，在「有用」和「没用」之间叠加", "body": "系统在分析您的工作内容时遇到了一个技术性困难：我们无法对一个没有边界的对象建立模型。您每天做的事情高度非线性，充满意外，没有固定输入，输出也很难提前预测——说得好听叫创造性工作，说得直白叫「说不清楚」。AI目前还不擅长处理这种情况，因为它需要规律，而您的工作规律就是没有规律。这是您的护城河，虽然这条护城河有一部分是因为连您自己也没完全想清楚自己在干嘛。", "tip": "继续保持混沌，但建议偶尔假装自己有方法论，这样至少在被问到的时候不会愣住。", "quote": "AI暂时取代不了你，因为连你自己都不知道你在做什么。", "fill": "linear-gradient(90deg,#FFD166,#D4A017)", "tb": "#FFFBEB", "tc": "#D4A017"},
+"M-04":{"name": "背锅候选人", "sub": "出了事需要有人被找到，而你就是那个人", "body": "您在组织里扮演着一个微妙但不可或缺的角色：那个在出问题的时候，名字会被第一个提起的人。这听起来不太好，但从职业安全的角度来说，它其实是一种保障。AI可以做决策，但它不能被骂，不能被约谈，不能在全体会议上站起来说「这件事我来承担」。只要人类社会还需要一个有血有肉的对象来承接责任，您就有存在的价值。您的护城河，是您的可问责性。", "tip": "继续当那个能被骂的人，但记得在被骂的过程中顺便积累一点真正的判断力，否则有一天连背锅的资格都会被外包出去。", "quote": "AI不怕被骂，这是你目前为数不多的竞争优势。", "fill": "linear-gradient(90deg,#FFD166,#D4A017)", "tb": "#FFFBEB", "tc": "#D4A017"},
+"M-05":{"name": "现场不可或缺者", "sub": "没有你在那里，这件事就不算发生", "body": "您的工作有一个AI目前无解的硬性门槛：必须有人在那里。不是视频通话里的人，不是屏幕上的人，是真实的、占据物理空间的、能被旁边的人感知到的人。这个要求听起来很低，低到不像是竞争优势，但在这个越来越多工作可以远程完成的时代，「必须在场」恰恰是一道AI翻不过去的门槛。您的优势不是您有多厉害，而是您在那里，而AI不在。", "tip": "珍惜「必须在场」这个属性，但别只靠它吃饭——在场是门票，进场之后还是得有点真本事。", "quote": "你最大的优势，是你出现在了那里，而AI没有。", "fill": "linear-gradient(90deg,#FFD166,#D4A017)", "tb": "#FFFBEB", "tc": "#D4A017"},
+"M-06":{"name": "需求翻译官", "sub": "老板说了什么不重要，重要的是你听懂了什么", "body": "您掌握了一门极其小众的语言：能听懂人话里没说出来的那部分。您的老板说「这个感觉不对」，您知道他实际上想要什么。他说「再想想」，您明白这句话背后有三层意思，而且每层意思在不同心情下还不一样。这种能力AI完全没有——它只能处理被说出来的需求，对于没说出来的、说错了的、自相矛盾的部分，它会认真执行然后一塌糊涂。您是混沌与秩序之间的缓冲带，是组织正常运转的隐形基础设施。", "tip": "您的翻译能力是真实资产，但长期泡在混沌里也有风险——建议定期提醒自己，您是在翻译需求，不是在认同它是合理的。", "quote": "你的核心技能是听懂人话里没说出来的那部分，AI到现在还在学说话。", "fill": "linear-gradient(90deg,#FFD166,#D4A017)", "tb": "#FFFBEB", "tc": "#D4A017"},
+"M-07":{"name": "人肉路由器", "sub": "信息经过你，就不只是信息了", "body": "您每天穿梭于各个部门、各个群、各个对接人之间，推进事情，协调立场，在各种「这不归我管」和「你去问他」之间硬生生开出一条路来。AI可以发消息，但它不会在发出去之前判断这个时机对不对、这个人今天适不适合被问、这句话要硬说还是要绕着说。您传递的不只是信息，是人情，是节奏，是一种只有在场的人才能感知到的分寸感。这个东西目前还没有办法写进提示词里。", "tip": "您的路由能力是稀缺资源，建议把它从隐性技能变成显性资产——下次绩效面谈，把您协调了多少人、推动了多少事认认真真量化一遍，让它看得见。", "quote": "AI能发消息，但它不知道这条消息该不该现在发。", "fill": "linear-gradient(90deg,#FFD166,#D4A017)", "tb": "#FFFBEB", "tc": "#D4A017"},
+"S-01":{"name": "签字担责人", "sub": "AI能起草，但最后那行它不敢签", "body": "经过严格测算，您属于当前AI最不愿意惹的那类岗位。不是因为您有多厉害，是因为出了事，AI没有办法被传唤出庭。它可以帮您起草合同、分析漏洞、生成一份看起来无懈可击的法律意见——但最后那一行签名，它往后退了。没有人愿意追究一个模型的法律责任，它也没有资产可以被冻结，没有执照可以被吊销。于是您还在，它在旁边辅助。这个分工，目前对您相当有利。", "tip": "AI起草，您来签，这个组合挺好的。记得让它多干点。", "quote": "AI什么都敢写，就是不敢在最后那行签上自己的名字。", "fill": "linear-gradient(90deg,#2EE89A,#1BC97D)", "tb": "#F0FDF8", "tc": "#1BC97D"},
+"S-02":{"name": "混沌免疫体", "sub": "你的处境太复杂，AI分析到一半就放弃了", "body": "系统在模拟您的工作场景时，多次遭遇无法建模的情况，最终决定放弃。您每天处理的事情，混乱程度已经超出了正常训练数据的覆盖范围——需求自相矛盾、流程形同虚设、各方立场随时反转。AI遇到这种情况，通常的反应是：给出一个极其理性的建议，然后被现实打脸，然后继续给出另一个极其理性的建议。它不会沮丧，但也没有用。您在这种环境里已经活下来了，这就是AI目前还无法理解的东西。", "tip": "您的处境已经超纲了，AI表示学不来，建议继续保持。", "quote": "你的工作环境混乱到AI给出建议之后，自己都不确定对不对。", "fill": "linear-gradient(90deg,#2EE89A,#1BC97D)", "tb": "#F0FDF8", "tc": "#1BC97D"},
+"S-03":{"name": "有手就是赢", "sub": "AI什么都知道，但它没有手", "body": "AI现在的处境，像一个博学多才但四肢不协调的人——它什么都知道，但什么都做不了。它可以告诉您最优的切割角度、最合理的施工顺序、最符合人体工学的操作姿势，然后眼睁睁看着您去做，自己一动不动。您手上的活儿，是它目前最羡慕、也最无能为力的事情。历史上有很长一段时间，体力劳动被认为是最容易被机器取代的——但在AI这里，它遇到了一个意想不到的瓶颈：它没有手。", "tip": "AI已经在努力长手了，但短期内您是安全的。好好保养您的手，那是您目前最值钱的资产。", "quote": "AI知道怎么做，但它没有手。这个问题，暂时没有解决方案。", "fill": "linear-gradient(90deg,#2EE89A,#1BC97D)", "tb": "#F0FDF8", "tc": "#1BC97D"},
+"S-04":{"name": "情绪价值提供者", "sub": "AI永远在线，但你给的那种感觉它学不来", "body": "AI在这件事上真的尽力了。它学会了说「我理解您的感受」，学会了在合适的地方加一个温暖的语气词，甚至学会了在您说完一段话之后停顿两秒再回复，显得像在认真思考。但用户还是能感觉出来哪里不对。不是因为AI说错了什么，是因为有些东西不在于说的内容，在于对面坐的是谁。您提供的那种感觉——被一个真实的人看见、被一个有自己故事的人理解——AI目前复制不了，不是不努力，是方向不对。", "tip": "AI还在努力学怎么共情，您已经天生会了，好好用这个优势。", "quote": "AI学会了说「我理解你」，但你们都知道它不是真的理解。", "fill": "linear-gradient(90deg,#2EE89A,#1BC97D)", "tb": "#F0FDF8", "tc": "#1BC97D"},
+"S-05":{"name": "训练数据的盲区", "sub": "AI翻遍了互联网，在你这里撞了南墙", "body": "AI有一个众所周知的工作方式：大量阅读，寻找规律，重新组合。这套方法非常有效，有效到大多数人类的创作它都能八九不离十地模仿出来。但它在您这里遇到了一个技术性障碍——找不到参照物。您做的东西，要么前面没人这样做过，要么数据在它够不到的地方。它对着您的作品研究了很久，最后在内部报了一个错误：样本不足，无法建模。这大概是AI在这个时代能给出的最高评价。", "tip": "AI夸您的方式，是对您的东西无从下手。收下这个奇怪的夸奖，然后继续走在它前面。", "quote": "AI最擅长模仿，而你恰好是它模仿不了的那一个。", "fill": "linear-gradient(90deg,#2EE89A,#1BC97D)", "tb": "#F0FDF8", "tc": "#1BC97D"},
+"S-06":{"name": "现生王者", "sub": "AI活在屏幕里，你活在它够不到的地方", "body": "AI的全部存在，都发生在数字世界里。它在那里无所不能——写作、计算、分析、生成，速度惊人，从不疲倦。但它有一个根本性的局限：它出不来。现实世界对它来说，是一个只能观看、无法触碰的地方。而您的工作，恰好发生在那里。您在真实的空间里移动、创造、修复、改变，每一个动作都是AI隔着屏幕做不到的事。它只能看着，偶尔给您出个主意，然后继续看着。", "tip": "让AI出主意，您来动手，这个分工目前对您相当划算。", "quote": "AI活在屏幕里，而你活在现实世界，这条界限目前还没人能抹掉。", "fill": "linear-gradient(90deg,#2EE89A,#1BC97D)", "tb": "#F0FDF8", "tc": "#1BC97D"},
+"S-07":{"name": "人情网络管理员", "sub": "AI发的消息，和你发的消息，对方感觉得出区别", "body": "AI可以记住所有人的生日，可以分析出最佳的联系时机，可以生成一条读起来真诚的问候消息——然后对方收到，礼貌地回复，然后什么都没有发生。因为那条消息是AI写的，对方感觉得出来，即使他说不清楚哪里不对。您花了多年时间建起来的这张关系网，靠的不是算法，是那些一起吃过的饭、帮过的忙、说过的实话。这些东西AI没有办法批量生产，也没有办法在短时间内补课。", "tip": "AI在努力学习怎么建立真实的人际关系，预计需要很长时间。在它学会之前，您的这张网好好用。", "quote": "AI发的问候，和你发的问候，对方都能感觉出区别。", "fill": "linear-gradient(90deg,#2EE89A,#1BC97D)", "tb": "#F0FDF8", "tc": "#1BC97D"}
+};
+
+var cq=0,ts=0,ans=0,done=false;
+var dimS={S:0,I:0,C:0,P:0,E:0,A:0,B:0,N:0},dimC={S:0,I:0,C:0,P:0,E:0,A:0,B:0,N:0};
+var answers=[];
+function showPage(id,back){var aIn=back?"back-entering":"entering",aOut=back?"back-exiting":"exiting";document.querySelectorAll(".page").forEach(function(p){if(p.id===id)return;if(!p.classList.contains("hidden")){p.classList.add(aOut);setTimeout(function(){p.classList.add("hidden");p.classList.remove(aOut);},350);}});var t=document.getElementById(id);t.classList.remove("hidden");t.classList.add(aIn);setTimeout(function(){t.classList.remove(aIn);},450);}
+function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2400);}
+function startQuiz(){cq=0;ts=0;ans=0;done=false;answers=[];dimS={S:0,I:0,C:0,P:0,E:0,A:0,B:0,N:0};dimC={S:0,I:0,C:0,P:0,E:0,A:0,B:0,N:0};renderQ(false,false);showPage("p-quiz",false);}
+function goBack(){if(done)return;if(cq===0){showPage("p-start",true);return;}var prev=answers.pop();if(prev!==undefined){var pq=Q[cq-1];dimS[pq.dim]-=pq.s[prev];dimC[pq.dim]-=1;ts-=pq.s[prev];ans--;}cq--;renderQ(false,true);}
+function renderQ(anim,back){var q=Q[cq],tot=Q.length;document.getElementById("quiz-num").textContent="Q"+(cq+1)+" / "+tot;var b=document.getElementById("quiz-dim-badge");b.textContent=q.dl;b.style.background=q.bg;b.style.color=q.c;document.getElementById("progress-fill").style.width=((cq+1)/tot*100).toFixed(1)+"%";var qEl=document.getElementById("quiz-q");if(anim){qEl.classList.add("fadeOut");setTimeout(function(){qEl.textContent=q.q;qEl.classList.remove("fadeOut");qEl.classList.add("fadeIn");setTimeout(function(){qEl.classList.remove("fadeIn");},300);},200);}else{qEl.textContent=q.q;}var con=document.getElementById("quiz-options");if(anim){con.querySelectorAll(".opt-card").forEach(function(c,i){c.style.animationDelay=(i*.04)+"s";c.classList.add("fadeOut");});setTimeout(function(){buildOpts(con,q);},220);}else{buildOpts(con,q);}}
+function buildOpts(con,q){con.innerHTML="";["A","B","C"].forEach(function(l,i){var c=document.createElement("div");c.className="opt-card";c.innerHTML='<div class="opt-letter">'+l+'</div><div class="opt-text">'+q.opts[i]+"</div>";c.style.opacity="0";c.style.transform="translateY(10px)";c.style.transition="opacity .28s ease,transform .28s ease,border-color .15s,box-shadow .15s";(function(idx,card){card.addEventListener("click",function(e){onOpt(card,e,idx);});})(i,c);con.appendChild(c);(function(idx,card){requestAnimationFrame(function(){setTimeout(function(){card.style.opacity="1";card.style.transform="translateY(0)";},idx*55+15);});})(i,c);});}
+function onOpt(card,e,i){var rect=card.getBoundingClientRect(),r=document.createElement("span");r.className="ripple";var sz=Math.max(rect.width,rect.height)*2;r.style.width=sz+"px";r.style.height=sz+"px";r.style.left=(e.clientX-rect.left-sz/2)+"px";r.style.top=(e.clientY-rect.top-sz/2)+"px";card.appendChild(r);setTimeout(function(){r.remove();},600);card.classList.add("selected");var q=Q[cq];dimS[q.dim]+=q.s[i];dimC[q.dim]+=1;ts+=q.s[i];ans++;answers.push(i);setTimeout(function(){if(cq<Q.length-1){cq++;renderQ(true,false);}else{done=true;goLoad();}},360);}
+function goLoad(){showPage("p-loading",false);var it=[{f:"lf1",p:"lp1",v:ri(60,97)},{f:"lf2",p:"lp2",v:ri(15,60)},{f:"lf3",p:"lp3",v:ri(40,90)},{f:"lf4",p:"lp4",v:ri(20,85)}];setTimeout(function(){it.forEach(function(x,idx){setTimeout(function(){document.getElementById(x.f).style.width=x.v+"%";cu(x.p,x.v,1000);},idx*200);});},300);setTimeout(goResult,2800);}
+function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function cu(id,tgt,dur){var el=document.getElementById(id),st=Date.now();(function t(){var p=Math.min((Date.now()-st)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(e*tgt)+"%";if(p<1){requestAnimationFrame(t);}})();}
+function norm(dim){var cnt=dimC[dim]||1;return(dimS[dim]/cnt-1)/2;}
+function calcRate(){var S=norm("S"),I=norm("I"),C=norm("C"),P=norm("P"),E=norm("E"),A=norm("A"),B=norm("B"),N=norm("N");return Math.min(97,Math.max(15,15+(S*0.25+I*0.20+A*0.15-C*0.20-P*0.15-E*0.10-B*0.08-N*0.07)*82+(Math.random()-.5)*2.6));}
+function pickConclusion(rate){var S=norm("S"),I=norm("I"),C=norm("C"),P=norm("P"),E=norm("E"),A=norm("A"),B=norm("B"),N=norm("N");if(rate>=85){if(A>0.6)return"D-03";if(S>0.7&&I>0.6)return"D-05";if(S>0.7&&E<0.3)return"D-04";if(S>0.6&&I>0.5)return"D-02";if(A>0.4&&I>0.5)return"D-07";if(S>0.8)return"D-06";return"D-01";}if(rate>=65){if(A>0.6&&I>0.5)return"W-07";if(A>0.5&&C<0.5)return"W-02";if(A>0.4&&I>0.4&&C<0.6)return"W-03";if(N>0.5&&I<0.4)return"W-04";if(S>0.5&&I>0.5&&A<0.4)return"W-06";if(S>0.5&&A<0.3)return"W-05";return"W-01";}if(rate>=35){if(B>0.6&&S>0.4)return"M-06";if(N>0.6&&E>0.5)return"M-07";if(P>0.6&&E>0.4)return"M-05";if(E>0.6&&N>0.5)return"M-04";if(C>0.6&&S<0.4)return"M-03";if(P>0.6&&S<0.5)return"M-02";if(E>0.5&&S<0.5)return"M-01";return"M-04";}if(C>0.7&&A<0.4)return"S-05";if(E>0.7&&S<0.4)return"S-04";if(P>0.7&&C>0.5)return"S-06";if(B>0.6&&N>0.5)return"S-02";if(P>0.6&&S<0.4)return"S-03";if(N>0.6&&E>0.5)return"S-07";return"S-01";}
+function goResult(){var rate=calcRate(),ri2=Math.floor(rate),cid=pickConclusion(rate),res=RES[cid];document.getElementById("result-illus").innerHTML='<img src="assets/'+cid+'.png" alt="'+res.name+'">';document.getElementById("result-name").textContent=res.name;document.getElementById("result-sub").textContent=res.sub;document.getElementById("result-body").textContent=res.body;document.getElementById("tip-text").textContent=res.tip;document.getElementById("result-quote").textContent=res.quote;document.getElementById("rate-fill").style.background=res.fill;var tc=document.getElementById("result-tip-card");tc.style.borderColor=res.tc+"44";tc.style.background=res.tb;document.getElementById("tip-icon").style.background=res.tc+"22";document.getElementById("tip-label").style.color=res.tc;showPage("p-result",false);document.getElementById("p-result").scrollTop=0;setTimeout(function(){document.getElementById("rate-fill").style.width=rate+"%";var el=document.getElementById("rate-int"),st=Date.now(),dur=1600;(function t(){var p=Math.min((Date.now()-st)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(e*ri2);if(p<1){requestAnimationFrame(t);}})();},350);}
+function copyLink(){var url=window.location.href;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){showToast("链接已复制，快发给朋友吧！");}).catch(function(){fbCopy(url);});}else{fbCopy(url);}}
+function fbCopy(t){var ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;top:-9999px";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);showToast("链接已复制，快发给朋友吧！");}
+function saveImage(){if(typeof html2canvas==="undefined"){showToast("图片库加载中，请稍后重试");return;}var mask=document.getElementById("saving-mask");mask.classList.add("show");html2canvas(document.getElementById("result-capture"),{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#ffffff"}).then(function(canvas){var link=document.createElement("a");link.download="AI诊断报告.png";link.href=canvas.toDataURL("image/png");link.click();showToast("图片已保存，快去分享吧！");mask.classList.remove("show");}).catch(function(){showToast("保存失败，请截图分享");mask.classList.remove("show");});}
+function resetAll(){cq=0;ts=0;ans=0;done=false;answers=[];dimS={S:0,I:0,C:0,P:0,E:0,A:0,B:0,N:0};dimC={S:0,I:0,C:0,P:0,E:0,A:0,B:0,N:0};document.getElementById("p-result").scrollTop=0;showPage("p-start",true);}
+
+</script></body></html>
